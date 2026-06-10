@@ -1,0 +1,14 @@
+version: "2"
+log: /var/log/ngrok.log
+
+# ===== 用法 =====
+# sudo ngrok start --config=ngrok.yml doc-infra
+# ========================================
+
+tunnels:
+  doc-infra:
+    proto: http
+    addr: 8080
+    inspect: true
+    # 若有付費版 ngrok，可設定固定 domain：
+    # domain: your-domain.ngrok.io

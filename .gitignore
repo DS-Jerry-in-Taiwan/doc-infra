@@ -1,0 +1,50 @@
+# === Secrets ===
+.env
+*.bak
+*.bak.*
+*.orig
+
+# === Credentials ===
+*.pem
+*.key
+credentials.json
+secrets.json
+
+# === OS ===
+.DS_Store
+Thumbs.db
+
+# === Editor ===
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# === Logs ===
+*.log
+logs/
+
+# === Build ===
+site/
+doc-sites/
+
+# === Node ===
+node_modules/
+npm-debug.log*
+
+# === Python ===
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# === Docker ===
+.dockerignore
+
+# === OpenCode ===
+# Ignore config files with secrets
+.opencode/opencode.json
+.opencode/*.json
+!.opencode/opencode.jsonc  # Keep template if exists
+!.opencode/opencode.json.template  # Keep template if exists

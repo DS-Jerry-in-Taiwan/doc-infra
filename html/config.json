@@ -1,0 +1,30 @@
+{
+  "projects": [
+    {
+      "name": "optimize-search-pipeline",
+      "display_name": "優化搜尋管線",
+      "category": "document",
+      "path": "/pipeline/",
+      "static_root": "/doc-sites/optimize-search-pipeline/",
+      "description": "RAG 搜尋優化相關文件"
+    },
+    {
+      "name": "bcas_quant",
+      "display_name": "BCAS 量化系統",
+      "category": "document",
+      "path": "/bcas/",
+      "static_root": "/doc-sites/bcas_quant/",
+      "description": "量化交易系統文件"
+    },
+    {
+      "name": "OrganBriefOptimization",
+      "display_name": "求才推薦系統",
+      "category": "document",
+      "path": "/organic/",
+      "static_root": "/doc-sites/OrganBriefOptimization/",
+      "description": "HR 求才推薦系統"
+    }
+  ],
+  "last_updated": "2026-06-09",
+  "mode": "static"
+}
