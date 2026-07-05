@@ -43,8 +43,8 @@ venv/
 .dockerignore
 
 # === OpenCode ===
-# Ignore config files with secrets
-.opencode/opencode.json
-.opencode/*.json
-!.opencode/opencode.jsonc  # Keep template if exists
-!.opencode/opencode.json.template  # Keep template if exists
+# Local agent runtime/configuration; do not version in this repository.
+.opencode/
+
+# === Private reports ===
+html/prod_weekly_report_*.html
