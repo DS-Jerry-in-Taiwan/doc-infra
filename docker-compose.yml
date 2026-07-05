@@ -14,7 +14,20 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - ./html:/usr/share/nginx/html:ro
       - /home/ubuntu/projects:/projects:ro
-      - /home/ubuntu/doc-sites:/doc-sites:ro
+      - ${DOC_INFRA_PUBLIC_ROOT:-/home/ubuntu/doc-sites}:/doc-sites:ro
+    networks:
+      - doc-infra-net
+    restart: unless-stopped
+
+  # ===== TLS 反向代理（Phase 6 — HTTPS 入口）=====
+  nginx-tls:
+    image: nginx:alpine
+    container_name: doc-infra-nginx-tls
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx/tls/nginx-tls.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/tls/certs:/etc/nginx/certs:ro
     networks:
       - doc-infra-net
     restart: unless-stopped
@@ -30,6 +43,32 @@ services:
       - "4040:4040"
     depends_on:
       - nginx
+    networks:
+      - doc-infra-net
+    restart: unless-stopped
+
+  # ===== SFTPGo 受控上傳入口（Phase 4 MVP）=====
+  # Image: drakkan/sftpgo (official SFTPGo Docker Hub image)
+  # Persistence: /var/lib/sftpgo 為預設資料目錄（users, groups, event rules, virtual folders metadata）
+  sftpgo:
+    image: drakkan/sftpgo:latest
+    container_name: doc-infra-sftpgo
+    ports:
+      - "${SFTPGO_BIND_ADDRESS:-127.0.0.1}:${SFTPGO_HTTP_PORT:-8082}:8080"
+      - "${SFTPGO_BIND_ADDRESS:-127.0.0.1}:${SFTPGO_SFTP_PORT:-2022}:2022"
+    volumes:
+      # SFTPGo 設定與持久化（users, groups, folders, event rules）
+      - ${SFTPGO_CONFIG_ROOT:-/srv/doc-infra/sftpgo}:/var/lib/sftpgo
+      # SFTPGo 伺服器設定（白名單等）
+      - ${SFTPGO_CONFIG_ROOT:-/srv/doc-infra/sftpgo}/sftpgo.json:/etc/sftpgo/sftpgo.json:ro
+      # 自動 promote script（Event Rule Command action 使用）
+      - ./scripts:/scripts:ro
+      # 上傳草稿目錄（uploader 寫入，reviewer 取用，不對外暴露）
+      - ${DOC_INFRA_INCOMING_ROOT:-/srv/doc-infra/data/incoming}:/srv/doc-infra/data/incoming
+      # staging area（Phase 5 validator/promote 使用，Phase 4 預設建立但不使用）
+      - ${DOC_INFRA_STAGING_ROOT:-/srv/doc-infra/data/staging}:/srv/doc-infra/data/staging
+      # 審計日誌目錄
+      - ${DOC_INFRA_AUDIT_ROOT:-/srv/doc-infra/data/audit}:/srv/doc-infra/data/audit
     networks:
       - doc-infra-net
     restart: unless-stopped
