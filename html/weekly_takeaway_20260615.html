@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>技術 Takeaway — 公司簡介模組優化</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: #f8fafc;
+    color: #1e293b;
+    margin: 0;
+    padding: 32px 16px;
+    line-height: 1.7;
+  }
+  .container { max-width: 680px; margin: 0 auto; }
+
+  .meta-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 4px;
+  }
+  .meta-row .tag {
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 11px;
+  }
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+    color: #0f172a;
+    line-height: 1.3;
+  }
+  .subtitle {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 36px;
+  }
+
+  .section { margin-bottom: 40px; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e2e8f0;
+  }
+  .section-header h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+    color: #0f172a;
+  }
+
+  .card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .card p { margin: 0 0 10px 0; font-size: 14px; color: #334155; }
+  .card p:last-child { margin-bottom: 0; }
+
+  .example-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 14px;
+    margin: 10px 0;
+    font-size: 13px;
+  }
+  .example-box .label {
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .example-box .label.bad { color: #dc2626; }
+  .example-box .label.good { color: #2e7d32; }
+  .example-box .text { font-style: italic; color: #475569; }
+
+  .comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 10px 0;
+  }
+  @media (max-width: 560px) { .comparison { grid-template-columns: 1fr; } }
+
+  .highlight {
+    padding: 14px;
+    border-radius: 8px;
+    margin: 12px 0;
+    font-size: 13px;
+  }
+  .highlight.red { background: #fef2f2; border-left: 4px solid #ef4444; }
+  .highlight.green { background: #f0fdf4; border-left: 4px solid #22c55e; }
+  .highlight.purple { background: #f5f3ff; border-left: 4px solid #7c3aed; }
+  .highlight p { margin: 0; font-size: 13px; }
+
+  .flowchart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    padding: 8px 0;
+    width: 100%;
+  }
+  .flow-layer {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    gap: 12px;
+    padding: 6px 0;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .flow-layer:last-of-type { border-bottom: none; }
+  .flow-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 120px;
+    flex-shrink: 0;
+  }
+  .flow-node {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    color: #fff;
+    width: 120px;
+    justify-content: center;
+    flex-shrink: 0;
+    line-height: 1.3;
+    text-align: center;
+  }
+  .flow-node.blue { background: #0891b2; }
+  .flow-node.dark { background: #475569; }
+  .flow-node.purple { background: #7c3aed; }
+  .flow-node.green { background: #65a30d; }
+  .flow-node.outline { background: #fff; color: #0f172a; border: 2px solid #0f172a; }
+  .flow-arrow { color: #94a3b8; font-size: 16px; text-align: center; line-height: 1; padding: 4px 0; }
+  .flow-desc {
+    font-size: 13px;
+    color: #475569;
+    padding: 4px 8px;
+    line-height: 1.5;
+    flex: 1;
+    text-align: left;
+  }
+  .flow-retry-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 0;
+    width: 100%;
+  }
+  .flow-retry-row .fail { color: #dc2626; }
+  .flow-retry-row .pass { color: #22c55e; }
+  .flow-branch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 10px 0 6px;
+    font-size: 13px;
+    width: 100%;
+  }
+  .flow-branch .pass { color: #22c55e; font-weight: 600; }
+
+  .tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 14px 0;
+  }
+  .tag-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+  .tag-item.blue { background: #dbeafe; color: #1e40af; }
+  .tag-item.green { background: #e8f5e9; color: #2e7d32; }
+  .tag-item.gray { background: #f1f5f9; color: #475569; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 8px 0;
+  }
+  thead th, table th {
+    text-align: left;
+    padding: 10px 8px;
+    background: #f8fafc;
+    border-bottom: 2px solid #e2e8f0;
+    font-weight: 700;
+    font-size: 12px;
+    color: #475569;
+  }
+  table td {
+    padding: 10px 8px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+    vertical-align: top;
+  }
+  table tr:last-child td { border-bottom: none; }
+  table tr:hover td { background: #f8fafc; }
+
+  .takeaway-box {
+    background: #f0fdf4;
+    border: 2px solid #22c55e;
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .takeaway-box h3 {
+    margin: 0 0 10px 0;
+    font-size: 15px;
+    color: #166534;
+  }
+  .takeaway-box ul {
+    margin: 0;
+    padding-left: 18px;
+    font-size: 14px;
+    line-height: 2;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid #e2e8f0;
+    margin: 36px 0;
+  }
+  code {
+    background: #f1f5f9;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #334155;
+  }
+  .footer {
+    text-align: center;
+    font-size: 12px;
+    color: #94a3b8;
+    margin-top: 48px;
+    padding-top: 16px;
+    border-top: 1px solid #e2e8f0;
+  }
+  a { color: #2e7d32; text-decoration: none; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="meta-row">
+    <span class="tag">Takeaway</span>
+    <span>2026-06-15</span>
+  </div>
+  <h1>公司簡介模組優化</h1>
+  <div class="subtitle">LLM 語氣校正 · 誤擋教訓 · 多層防護設計</div>
+
+  <!-- ======== 1. 問題 ======== -->
+  <div class="section">
+    <div class="section-header">
+      <h2>1️⃣ 問題：LLM 預設是 sales 角度，不是招募角度</h2>
+    </div>
+    <div class="card">
+      <p>公司簡介應該讓求職者了解團隊文化與工作環境，但 LLM 的預設輸出是 sales-facing：</p>
+      <div class="comparison">
+        <div class="example-box">
+          <div class="label bad">❌ LLM 預設輸出</div>
+          <div class="text">「我們致力於為客戶提供卓越的服務與解決方案。」</div>
+        </div>
+        <div class="example-box">
+          <div class="label good">✅ 我們要的</div>
+          <div class="text">「我們的團隊專注於技術創新，提供穩定的工作環境與成長機會。」</div>
+        </div>
+      </div>
+      <p>原因是 LLM 沒有「我現在是在招募人才」的 context awareness。</p>
+    </div>
+  </div>
+
+  <!-- ======== 2. 解法：多層防護 ======== -->
+  <div class="section">
+    <div class="section-header">
+      <h2>2️⃣ 解法：多層防護，不靠單一關卡</h2>
+    </div>
+    <div class="card">
+      <p><strong>設計原則：</strong>從源頭到輸出，每一層都設防線。上一層沒擋住的，下一層補上。QualityGate 只是最後一道保險，不是守門員。</p>
+    </div>
+
+    <div class="card" style="text-align:left; padding:20px;">
+      <div class="flowchart">
+
+        <div class="flow-layer">
+          <div class="flow-left">
+            <span class="flow-node blue">📝 源頭控管<br/>Prompt</span>
+            <span class="flow-arrow">↓</span>
+          </div>
+          <span class="flow-desc">角色定義「你是 HR，不是業務」，例句全面校正為招募角度，讓 LLM 從源頭就走對方向</span>
+        </div>
+
+        <div class="flow-layer">
+          <div class="flow-left">
+            <span class="flow-node blue">📚 句型庫<br/>Structure</span>
+            <span class="flow-arrow">↓</span>
+          </div>
+          <span class="flow-desc">開場白與句型模板統一為團隊文化、工作環境、發展機會等招募語料</span>
+        </div>
+
+        <div class="flow-layer">
+          <div class="flow-left">
+            <span class="flow-node blue">🔁 備援路徑<br/>Fallback</span>
+            <span class="flow-arrow">↓</span>
+          </div>
+          <span class="flow-desc">LLM 掛掉或搜尋失敗時，回退的 mock 文案也是招募語氣，不走 sales pitch</span>
+        </div>
+
+        <div class="flow-layer">
+          <div class="flow-left">
+            <span class="flow-node dark">🤖 LLM</span>
+            <span class="flow-arrow">↓</span>
+          </div>
+          <span class="flow-desc">生成公司簡介</span>
+        </div>
+
+        <div class="flow-layer">
+          <div class="flow-left">
+            <span class="flow-node purple">🛡️ 產出攔截<br/>QualityGate</span>
+            <span class="flow-arrow">↓</span>
+          </div>
+          <span class="flow-desc">phrase 掃描殘留 sales 用語，抓到就 retry 重新生成，直到通過或達上限</span>
+        </div>
+
+        <div class="flow-layer">
+          <div class="flow-left">
+            <span class="flow-node green">🎨 後處理<br/>Diversifier</span>
+            <span class="flow-arrow">↓</span>
+          </div>
+          <span class="flow-desc">限制內容多樣化模組不要將文案放大為銷售修辭</span>
+        </div>
+
+        <div class="flow-layer" style="border-bottom:none;">
+          <div class="flow-left">
+            <span class="flow-node outline">📄 最終產出</span>
+          </div>
+          <span class="flow-desc">確保招募語氣的公司簡介</span>
+        </div>
+
+      </div>
+      <div style="margin-top:16px; padding:14px; background:#f8fafc; border-radius:8px; border:1px solid #e2e8f0; font-size:13px; color:#475569;">
+        <strong>核心邏輯：</strong>Prompt 先把角色設對（你是 HR，不是業務），讓 LLM 從源頭就走對方向，QualityGate 只負責攔截殘留的漏網之魚。
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== 3. 踩坑 ======== -->
+  <div class="section">
+    <div class="section-header">
+      <h2>3️⃣ 設計過程遇到的坑</h2>
+    </div>
+    <div class="card">
+      <p>我們先在 QualityGate 加黑名單，列了 14 個 sales 字眼，包含 <code>患者</code>、<code>消費者</code>、<code>滿足您的需求</code>⋯⋯結果卻誤傷了 B2C 行業：</p>
+      <div class="comparison">
+        <div class="example-box">
+          <div class="label bad">❌ 家歡復健專科診所</div>
+          <div class="text">「我們提供患者專業的復健治療⋯⋯」</div>
+          <div style="font-size:12px; color:#94a3b8; margin-top:4px;">命中「患者」→ retry 5 次失敗</div>
+        </div>
+        <div class="example-box">
+          <div class="label bad">❌ 蜜思服飾店</div>
+          <div class="text">「我們致力於滿足消費者對時尚的需求⋯⋯」</div>
+          <div style="font-size:12px; color:#94a3b8; margin-top:4px;">命中「消費者」「滿足您的需求」→ retry 9 次失敗</div>
+        </div>
+      </div>
+      <div class="highlight red">
+        <p><strong>教訓：</strong>黑名單分不出「合法商業描述」和「銷售語氣」。診所說患者、服飾店說消費者都是事實，不是 sales pitch。14 個 phrase 砍到剩 5 個，只保留明顯 sales-pitch（<code>為客戶提供</code>、<code>以客為尊</code> 等），行業中性詞放行。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== 4. 結果 ======== -->
+  <div class="section">
+    <div class="section-header">
+      <h2>4️⃣ 結果與 Takeaways</h2>
+    </div>
+
+    <div class="card">
+      <p><strong>校正前後對照：</strong></p>
+      <div class="example-box" style="border-left:3px solid #dc2626;">
+        <div class="text">「我們致力於為客戶提供最優質的服務，是您值得信賴的合作夥伴。」</div>
+      </div>
+      <div class="example-box" style="border-left:3px solid #22c55e;">
+        <div class="text">「我們的團隊專注於技術創新，提供穩定的工作環境與多元的學習機會。」</div>
+      </div>
+    </div>
+
+    <div class="takeaway-box">
+      <h3>💡 Takeaway</h3>
+      <ul>
+        <li><strong>單點防護不夠</strong> — 黑名單會誤傷，Prompt 源頭控管才是根本</li>
+        <li><strong>多層互補</strong> — 每一層負擔減輕，單層失效不會崩潰</li>
+        <li><strong>QualityGate 是最後保險</strong> — 精準度比數量重要，14→5 phrase</li>
+      </ul>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- Bonus -->
+  <div class="section">
+    <div class="section-header">
+      <h2>🏛️ 同場加映：抽象層設計的應用</h2>
+    </div>
+    <div class="card">
+      <p>這週另一個重點是確保每個模組都遵循同一套抽象層設計 — 新增功能時不開新路徑，而是 implement 既有的 interface。</p>
+
+      <table>
+        <tr><th style="width:22%;">模組</th><th>目標</th><th>結果</th></tr>
+        <tr>
+          <td><strong>Storage</strong></td>
+          <td>統一儲存層介面，切換 DB 不影響業務邏輯</td>
+          <td>DynamoDB → RDS 兩天上線，<code>StorageInterface</code> 不變</td>
+        </tr>
+        <tr>
+          <td><strong>Error Handler</strong></td>
+          <td>收斂 4 處分散的 keyword match 到統一入口</td>
+          <td><code>ErrorClassifier</code> 統一分類，新增錯誤只需加 rule</td>
+        </tr>
+        <tr>
+          <td><strong>Search</strong></td>
+          <td>搜尋引擎可抽換，不影響上游流程</td>
+          <td>Tavily / Gemini / 並行搜尋 — 皆 implement <code>SearchTool</code></td>
+        </tr>
+        <tr>
+          <td><strong>LLM</strong></td>
+          <td>LLM 後端可替換，不影響生成邏輯</td>
+          <td>Gemini / Bedrock Nova — 皆 implement <code>LLMProvider</code></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer">
+    <a href="/">← 回到首頁</a> &nbsp;·&nbsp; Powered by doc-infra
+  </div>
+
+</div>
+
+</body>
+</html>

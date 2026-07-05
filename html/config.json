@@ -6,7 +6,8 @@
       "category": "document",
       "path": "/pipeline/",
       "static_root": "/doc-sites/optimize-search-pipeline/",
-      "description": "RAG 搜尋優化相關文件"
+      "description": "RAG 搜尋優化相關文件",
+      "publish_state": "published"
     },
     {
       "name": "bcas_quant",
@@ -14,7 +15,8 @@
       "category": "document",
       "path": "/bcas/",
       "static_root": "/doc-sites/bcas_quant/",
-      "description": "量化交易系統文件"
+      "description": "量化交易系統文件",
+      "publish_state": "published"
     },
     {
       "name": "OrganBriefOptimization",
@@ -22,9 +24,46 @@
       "category": "document",
       "path": "/organic/",
       "static_root": "/doc-sites/OrganBriefOptimization/",
-      "description": "HR 求才推薦系統"
+      "description": "HR 求才推薦系統",
+      "publish_state": "published"
+    },
+    {
+      "name": "trade-data",
+      "display_name": "Trade Review 原型",
+      "category": "document",
+      "path": "/trade-data/",
+      "static_root": "/doc-sites/trade-data/",
+      "description": "交易回顧 + SL/TP 參數模擬引擎 Prototype",
+      "publish_state": "published"
+    },
+    {
+      "name": "company-profile-optimizer",
+      "display_name": "公司簡介優化器",
+      "category": "document",
+      "path": "/company-profile/",
+      "static_root": "/projects/company-profile-optimizer/docs/public/",
+      "description": "開發紀錄、需求分析、Validate Gate 報告",
+      "publish_state": "legacy"
+    },
+    {
+      "name": "code-reviewer",
+      "display_name": "Code Reviewer CI Workflow",
+      "category": "document",
+      "path": "/code-review/",
+      "static_root": "/doc-sites/code-reviewer/",
+      "description": "自動化 Code Review、Secret Scan、Lint Review 與新版架構設計文件",
+      "publish_state": "published"
+    },
+    {
+      "name": "litellm",
+      "display_name": "LiteLLM 文件中心",
+      "category": "document",
+      "path": "/litellm/",
+      "static_root": "/doc-sites/litellm/",
+      "description": "Current Architecture Inventory、AWS 部署計畫、服務架構報告與調研結論統一入口",
+      "publish_state": "published"
     }
   ],
-  "last_updated": "2026-06-09",
+  "last_updated": "2026-07-02",
   "mode": "static"
 }
