@@ -62,7 +62,9 @@ def _iter_files_with_dotfiles(root: Path):
 ALLOWED_PROJECTS = {
     "bcas_quant",          # /bcas/
     "code-reviewer",       # /code-review/
+    "company-profile",     # /company-profile/
     "litellm",             # /litellm/
+    "litellm-mvp",         # /litellm-mvp/
     "OrganBriefOptimization",  # /organic/
     "optimize-search-pipeline", # /pipeline/
     "trade-data",          # /trade-data/
@@ -134,9 +136,19 @@ PROJECT_MAP = {
         "static_root": "/doc-sites/code-reviewer/",
         "publish_state": "published",
     },
+    "company-profile": {
+        "path": "/company-profile/",
+        "static_root": "/doc-sites/company-profile/",
+        "publish_state": "published",
+    },
     "litellm": {
         "path": "/litellm/",
         "static_root": "/doc-sites/litellm/",
+        "publish_state": "published",
+    },
+    "litellm-mvp": {
+        "path": "/litellm-mvp/",
+        "static_root": "/doc-sites/litellm-mvp/",
         "publish_state": "published",
     },
     "OrganBriefOptimization": {

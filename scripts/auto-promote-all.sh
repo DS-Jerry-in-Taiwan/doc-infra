@@ -11,7 +11,7 @@ export DOC_INFRA_AUDIT_ROOT=/home/ubuntu/doc-infra-data/audit
 export DOC_INFRA_GATE_MAX_FILES=2000
 export DOC_INFRA_GATE_MAX_BYTES=209715200
 
-ALL_PROJECTS="bcas_quant code-reviewer litellm OrganBriefOptimization optimize-search-pipeline trade-data"
+ALL_PROJECTS="bcas_quant code-reviewer company-profile litellm litellm-mvp OrganBriefOptimization optimize-search-pipeline trade-data"
 
 for PROJECT in $ALL_PROJECTS; do
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting $PROJECT..."
