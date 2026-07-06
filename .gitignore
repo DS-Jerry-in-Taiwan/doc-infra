@@ -46,5 +46,8 @@ venv/
 # Local agent runtime/configuration; do not version in this repository.
 .opencode/
 
+# === Agent context (auto-generated, not versioned) ===
+docs/agent_context/
+
 # === Private reports ===
 html/prod_weekly_report_*.html
