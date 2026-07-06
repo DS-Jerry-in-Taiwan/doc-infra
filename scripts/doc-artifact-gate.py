@@ -1,29 +1,33 @@
 #!/usr/bin/env python3
 """
-doc-artifact-gate.py — Phase 5 Validator / Promote Gate MVP
+doc-artifact-gate.py — Phase 5 Validator / Promote Gate
 
 Validates, stages, promotes, and rolls back doc artifacts for the doc-infra pipeline.
 
 Usage:
-    python3 scripts/doc-artifact-gate.py validate --project code-reviewer
-    python3 scripts/doc-artifact-gate.py stage --project code-reviewer
-    python3 scripts/doc-artifact-gate.py promote --project code-reviewer --confirm
-    python3 scripts/doc-artifact-gate.py rollback --project code-reviewer --backup <backup-id> --confirm
+    python3 scripts/doc-artifact-gate.py validate --project <project>
+    python3 scripts/doc-artifact-gate.py stage --project <project>
+    python3 scripts/doc-artifact-gate.py promote --project <project> --confirm
+    python3 scripts/doc-artifact-gate.py rollback --project <project> --backup <backup-id> --confirm
+
+Supported projects:
+    bcas_quant, code-reviewer, litellm, OrganBriefOptimization,
+    optimize-search-pipeline, trade-data
 
 Environment variables:
-    DOC_INFRA_INCOMING_ROOT   Default: /srv/doc-infra/data/incoming
-    DOC_INFRA_STAGING_ROOT    Default: /srv/doc-infra/data/staging
-    DOC_INFRA_PUBLIC_ROOT      Default: /home/ubuntu/doc-sites
-    DOC_INFRA_AUDIT_ROOT       Default: /srv/doc-infra/data/audit
-    DOC_INFRA_BACKUP_ROOT      Default: /srv/doc-infra/data/backups
-    DOC_INFRA_GATE_MAX_FILES   Default: 2000
-    DOC_INFRA_GATE_MAX_BYTES   Default: 209715200 (200 MiB)
+    DOC_INFRA_INCOMING_ROOT   Default: /home/ubuntu/doc-infra-data/incoming
+    DOC_INFRA_STAGING_ROOT    Default: /home/ubuntu/doc-infra-data/staging
+    DOC_INFRA_PUBLIC_ROOT     Default: /home/ubuntu/doc-infra-data/published
+    DOC_INFRA_AUDIT_ROOT      Default: /home/ubuntu/doc-infra-data/audit
+    DOC_INFRA_BACKUP_ROOT     Default: /home/ubuntu/doc-infra-data/backups
+    DOC_INFRA_GATE_MAX_FILES  Default: 2000
+    DOC_INFRA_GATE_MAX_BYTES  Default: 209715200 (200 MiB)
 
 Exit codes:
     0  = success
     1  = validation failure or operation failure
     2  = missing required arguments
-    3  = project not allowed (MVP only supports code-reviewer)
+    3  = project not allowed
 """
 
 import argparse
@@ -55,7 +59,14 @@ def _iter_files_with_dotfiles(root: Path):
 
 # ─── Constants ────────────────────────────────────────────────────────────────
 
-ALLOWED_PROJECT = "code-reviewer"
+ALLOWED_PROJECTS = {
+    "bcas_quant",          # /bcas/
+    "code-reviewer",       # /code-review/
+    "litellm",             # /litellm/
+    "OrganBriefOptimization",  # /organic/
+    "optimize-search-pipeline", # /pipeline/
+    "trade-data",          # /trade-data/
+}
 
 ALLOWED_EXTENSIONS = {
     ".html", ".htm", ".css", ".js", ".json", ".png", ".jpg",
@@ -113,11 +124,36 @@ def max_bytes() -> int:
 # ─── Project mapping ──────────────────────────────────────────────────────────
 
 PROJECT_MAP = {
+    "bcas_quant": {
+        "path": "/bcas/",
+        "static_root": "/doc-sites/bcas_quant/",
+        "publish_state": "published",
+    },
     "code-reviewer": {
         "path": "/code-review/",
         "static_root": "/doc-sites/code-reviewer/",
         "publish_state": "published",
-    }
+    },
+    "litellm": {
+        "path": "/litellm/",
+        "static_root": "/doc-sites/litellm/",
+        "publish_state": "published",
+    },
+    "OrganBriefOptimization": {
+        "path": "/organic/",
+        "static_root": "/doc-sites/OrganBriefOptimization/",
+        "publish_state": "published",
+    },
+    "optimize-search-pipeline": {
+        "path": "/pipeline/",
+        "static_root": "/doc-sites/optimize-search-pipeline/",
+        "publish_state": "published",
+    },
+    "trade-data": {
+        "path": "/trade-data/",
+        "static_root": "/doc-sites/trade-data/",
+        "publish_state": "published",
+    },
 }
 
 # ─── Validation ───────────────────────────────────────────────────────────────
@@ -593,21 +629,21 @@ def main():
 
     p_validate = sub.add_parser("validate", help="Validate incoming artifact")
     p_validate.add_argument("--project", required=True,
-                            help="Project name (MVP: code-reviewer)")
+                            help="Project name")
 
     p_stage = sub.add_parser("stage", help="Copy incoming to staging")
     p_stage.add_argument("--project", required=True,
-                         help="Project name (MVP: code-reviewer)")
+                         help="Project name")
 
     p_promote = sub.add_parser("promote", help="Promote staging to published")
     p_promote.add_argument("--project", required=True,
-                           help="Project name (MVP: code-reviewer)")
+                           help="Project name")
     p_promote.add_argument("--confirm", action="store_true",
                            help="Confirm promotion (required)")
 
     p_rollback = sub.add_parser("rollback", help="Rollback to a backup")
     p_rollback.add_argument("--project", required=True,
-                            help="Project name (MVP: code-reviewer)")
+                            help="Project name")
     p_rollback.add_argument("--backup", required=True,
                             help="Backup ID to restore")
     p_rollback.add_argument("--confirm", action="store_true",
@@ -615,11 +651,11 @@ def main():
 
     args = parser.parse_args()
 
-    # MVP hard gate: unknown project exits non-0 before mutation/scanning
+    # Project gate: reject unknown projects before any mutation/scanning
     if args.command in ("validate", "stage", "promote", "rollback"):
-        if args.project != ALLOWED_PROJECT:
+        if args.project not in ALLOWED_PROJECTS:
             print(f"ERROR: Unknown project '{args.project}'. "
-                  f"MVP only supports '{ALLOWED_PROJECT}'",
+                  f"Allowed projects: {', '.join(sorted(ALLOWED_PROJECTS))}",
                   file=sys.stderr)
             sys.exit(3)
 
