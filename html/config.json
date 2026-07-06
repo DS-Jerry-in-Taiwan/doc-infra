@@ -37,13 +37,13 @@
       "publish_state": "published"
     },
     {
-      "name": "company-profile-optimizer",
+      "name": "company-profile",
       "display_name": "公司簡介優化器",
       "category": "document",
       "path": "/company-profile/",
-      "static_root": "/projects/company-profile-optimizer/docs/public/",
+      "static_root": "/doc-sites/company-profile/",
       "description": "開發紀錄、需求分析、Validate Gate 報告",
-      "publish_state": "legacy"
+      "publish_state": "published"
     },
     {
       "name": "code-reviewer",
@@ -62,8 +62,17 @@
       "static_root": "/doc-sites/litellm/",
       "description": "Current Architecture Inventory、AWS 部署計畫、服務架構報告與調研結論統一入口",
       "publish_state": "published"
+    },
+    {
+      "name": "litellm-mvp",
+      "display_name": "LiteLLM MVP 調研結論",
+      "category": "document",
+      "path": "/litellm-mvp/",
+      "static_root": "/doc-sites/litellm-mvp/",
+      "description": "LiteLLM 最小可行性產品調研與結論報告",
+      "publish_state": "published"
     }
   ],
-  "last_updated": "2026-07-02",
+  "last_updated": "2026-07-06",
   "mode": "static"
 }
